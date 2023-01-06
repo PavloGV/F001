@@ -1,7 +1,7 @@
 """
 :file: ion_test.py
 
-:auhtor: Pavlo Vlastos
+:author: Pavlo Vlastos
 
 """
 import numpy as np
@@ -37,9 +37,9 @@ b = np.array([[bx0],
 print("b.T.shape = {}".format(b.T.shape))
 
 # Charges
-coulomb_constant = 1.602176634*(10.0**(-19.0))
+electron_charge_coulombs = 1.602176634*(10.0**(-19.0))
 q_proton = 1.0
-q_ion = q_proton*coulomb_constant
+q_ion = q_proton*electron_charge_coulombs
 
 # Distance between cathode and anode in meters
 d_arc = 0.04
