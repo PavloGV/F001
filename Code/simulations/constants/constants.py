@@ -1,5 +1,5 @@
 """
-constants.py
+Constants.py
 
 A bunch of constants, vectors, and matrices
 
@@ -16,7 +16,9 @@ speed_of_light = 2.998*(10.0**(8.0))  # m/s
 vacuum_magnetic_permeability = 1.25663706212*(10.0**(-6.0))  # N A^(-2)
 standard_uncertainty = 0.00000000019*(10.0**(-6.0))  # N A^(-2)
 Coulomb_constant = 8.9875517923*(10.0**(9.0))  # (N m^2)/(C^2)
+k_e = Coulomb_constant
 dist_electron_proton_gnd_state = 5.29*(10.0**(-11.0))
+fusion_proximity_distance = 1.0*(10.0**(-15.0))
 
 # Charge
 q_proton = 1.0
@@ -53,3 +55,20 @@ B_1_proton = np.array([[0.0, 0.0, 0.0],
                       [1.0/m_proton, 0.0, 0.0],
                       [0.0, 1.0/m_proton, 0.0],
                       [0.0, 0.0, 1.0/m_proton]])
+
+
+# Electron Dynamics
+# State[xdot, ydot, zdot, xddot, yddot, zddot]'
+A_1_electron = np.array([[0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
+
+B_1_electron = np.array([[0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0],
+                         [1.0/m_electron, 0.0, 0.0],
+                         [0.0, 1.0/m_electron, 0.0],
+                         [0.0, 0.0, 1.0/m_electron]])

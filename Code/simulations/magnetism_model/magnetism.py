@@ -1,5 +1,5 @@
 """
-magnetism.py
+Magnetism.py
 
 :author: Pavlo Vlastos
 """
