@@ -5,8 +5,8 @@
 
 """
 import numpy as np
-from ..Constants import Constants as CT
-from ..Particle_Model import Particle as PL
+from Constants import Constants as CT
+from Particles import Particle as PL
 
 
 def calculate_F_Lorentz(particle_a=PL.Particle_Model(),
@@ -21,7 +21,7 @@ def calculate_F_Lorentz(particle_a=PL.Particle_Model(),
 
     v = particle_a.get_velocity()
 
-    F_Lorentz = q_a*E[:, 0] + np.cross(v[:, 0], B[:, 0])
+    F_Lorentz = q_a*(E[:, 0] + np.cross(v[:, 0], B[:, 0]))
     F_Lorentz = np.reshape(F_Lorentz, (3, 1))
 
     return F_Lorentz
@@ -66,9 +66,7 @@ def calculate_F_coulomb(particle_a=PL.Particle_Model(),
 
 
 def calculate_F_coulomb_all(particle_a=PL.Particle_Model(),
-                            particle_list=[PL.Particle_Model()],
-                            E=np.zeros((3, 1)),
-                            B=np.zeros((3, 1))):
+                            particle_list=[PL.Particle_Model()]):
 
     q_a = particle_a.get_charge()
     q_a_abs = np.abs(q_a)
@@ -77,36 +75,38 @@ def calculate_F_coulomb_all(particle_a=PL.Particle_Model(),
     F_sum = np.zeros((3, 1))
 
     for i, particle_i in enumerate(particle_list):
-        q_b = particle_i.get_charge()
 
-        r_b = particle_i.get_position()
+        if particle_a.get_id() != particle_i.get_id():
+            q_b = particle_i.get_charge()
 
-        ell = r_a - r_b
+            r_b = particle_i.get_position()
 
-        ell_norm = np.linalg.norm(ell)
+            ell = r_a - r_b
 
-        # Limit the closest distance between two particles to avoid division by zero
-        if ((ell_norm < CT.dist_electron_proton_gnd_state) and
-                (particle_a.particle_type != particle_i.particle_type)):
+            ell_norm = np.linalg.norm(ell)
 
-            ell_norm = CT.dist_electron_proton_gnd_state
+            # Limit the closest distance between two particles to avoid division by zero
+            if ((ell_norm < CT.dist_electron_proton_gnd_state) and
+                    (particle_a.particle_type != particle_i.particle_type)):
 
-        elif ((ell_norm < CT.fusion_proximity_distance) and
-            (particle_a.particle_type == 'proton') and
-                (particle_i.particle_type == 'proton')):
+                ell_norm = CT.dist_electron_proton_gnd_state
 
-            particle_a.set_fusion_proximity_flag(True)
-            particle_i.set_fusion_proximity_flag(True)
+            if ((ell_norm < CT.fusion_proximity_distance) and
+                (particle_a.particle_type == 'proton') and
+                    (particle_i.particle_type == 'proton')):
 
-            ell_norm = CT.fusion_proximity_distance
+                particle_a.set_fusion_proximity_flag(True)
+                particle_i.set_fusion_proximity_flag(True)
 
-            print("** ********************************* **")
-            print("** Force.py: Fusion proximity alert! **")
-            print("** Particle a and Particle {}        **".format(i))
-            print("** ********************************* **")
+                ell_norm = CT.fusion_proximity_distance
 
-        ellhat = ell/ell_norm
+                print("** ********************************* **")
+                print("** Force.py: Fusion proximity alert! **")
+                print("** Particle a and Particle {}        **".format(i))
+                print("** ********************************* **")
 
-        F_sum += (CT.k_e * q_a_abs * np.abs(q_b) * ellhat) / (ell_norm**2.0)
+            ellhat = ell/ell_norm
+
+            F_sum += (CT.k_e * q_a_abs * np.abs(q_b) * ellhat) / (ell_norm**2.0)
 
     return F_sum

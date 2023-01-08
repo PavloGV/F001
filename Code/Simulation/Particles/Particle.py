@@ -6,7 +6,7 @@ import numpy as np
 
 from scipy.linalg import expm
 from scipy.integrate import solve_ivp, RK45
-from ..Constants import Constants as CT
+from Constants import Constants as CT
 
 
 class Particle_Model:
@@ -14,13 +14,16 @@ class Particle_Model:
     A dynamical model of a proton
     """
 
-    def __init__(self, dt_sim=0.1, A=CT.A_1_proton, B=CT.B_1_proton,
-                 charge=CT.q_proton, particle_type='proton'):
+    def __init__(self, id=-1, dt_sim=0.1, A=CT.A_1_proton, B=CT.B_1_proton,
+                 charge=(CT.q_proton*CT.electron_charge_coulombs),
+                 particle_type='proton'):
         """
         :brief: 
         This is a simplified particle model class. The default instantiation of
         this class is a proton.
         """
+
+        self.id = id
 
         self.dt_sim = dt_sim
 
@@ -41,8 +44,6 @@ class Particle_Model:
         self.Gamma = self.PhiGamma_ZI[0:m, An:]
 
         self.u = np.zeros((3, 1))
-        self.u_m, self.u_n = self.u.shape
-        self.x_m, self.x_n = self.x.shape
         self.charge = charge
         self.particle_type = particle_type
         self.fusion_proximity_flag = False
@@ -53,7 +54,7 @@ class Particle_Model:
         :param u: The input 
         """
 
-        self.u = np.copy(u)
+        self.u = u
 
         self.x = self.Phi @ self.x + self.Gamma @ self.u
 
@@ -61,23 +62,23 @@ class Particle_Model:
         self.position[1][0] = self.x[1][0]
         self.position[2][0] = self.x[2][0]
 
-        self.velocity[3][0] = self.x[3][0]
-        self.velocity[4][0] = self.x[4][0]
-        self.velocity[5][0] = self.x[5][0]
+        self.velocity[0][0] = self.x[3][0]
+        self.velocity[1][0] = self.x[4][0]
+        self.velocity[2][0] = self.x[5][0]
 
     def update_continous(self, xdot=np.zeros((CT.num_states_1_particle, 1)),
-               u=np.zeros((3, 1))):
+                         u=np.zeros((3, 1))):
         """
         :brief: 
         :param xdot: the derivative of the state vector x
         :param u: The input 
         """
 
-        self.u = np.copy(u)
+        self.u = u
 
         self.xdot = self.A @ self.x + self.B @ self.u
 
-        xdot = np.copy(self.xdot)
+        xdot = self.xdot
 
         return xdot
 
@@ -99,13 +100,19 @@ class Particle_Model:
         """
         :param position: A 3x1 position vector
         """
-        self.position = np.copy(position)
+        self.position = position
 
     def set_velocity(self, velocity=np.zeros((3, 1))):
         """
         :param velocity: A 3x1 velocity vector
         """
-        self.velocity = np.copy(velocity)
+        self.velocity = velocity
+
+    def set_id(self, id=-1):
+        """
+        :param id:
+        """
+        self.id = id
 
     def get_position(self):
         """
@@ -127,3 +134,9 @@ class Particle_Model:
         """
 
         return self.charge
+
+    def get_id(self):
+        """
+        :rtype int
+        """
+        return self.id
